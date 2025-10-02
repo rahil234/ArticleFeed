@@ -1,0 +1,13 @@
+.dockerignore
+.gitignore
+.prettierrc
+eslint.config.mjs
+Dockerfile
+Dockerfile.dev
+nest-cli.json
+README.md
+dist
+node_modules
+src/**/*.spec.ts
+src/**/*.test.ts
+src/**/__tests__
