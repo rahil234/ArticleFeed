@@ -20,4 +20,4 @@ RUN npm install --omit=dev
 
 COPY --from=builder /app/dist ./dist
 
-CMD ["npm", "run", "start"]
+CMD sh -c "npm run prisma:migrate && npm run start:dev"
