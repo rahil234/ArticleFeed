@@ -1,27 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import morgan from 'morgan';
 import { Logger, LoggerInstance } from '@/common/logger/winston-logger';
+import { setupApp } from '@/common/config/app.config';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create(AppModule, {
         logger: LoggerInstance,
     });
 
-    app.use(morgan('dev'));
+    setupApp(app);
 
-    app.setGlobalPrefix('api');
-
-    app.enableCors({
-        origin: ['http://localhost:3000'],
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-        credentials: true,
-    });
-
-    const port = process.env.PORT;
-    if (!port) {
-        throw new Error('PORT environment variable is not set');
-    }
+    const configService = app.get(ConfigService);
+    const port = configService.getOrThrow<number>('PORT');
 
     await app.listen(port, () => {
         Logger.log('info', `Server is running on http://localhost:${port}`);
