@@ -1,27 +1,31 @@
-import {fetchApi} from "@/lib/api";
+import { api } from '@/lib/api';
+import { handleAsync } from '@/utils/handle-async.util';
+import { User } from '@/lib/types';
 
 export const authService = {
     register: (data: {
-        firstName: string
-        lastName: string
-        email: string
-        phone: string
-        dob: string
-        password: string
-        preferences: string[]
+        firstName: string;
+        lastName: string;
+        email: string;
+        phone: string;
+        dob: string;
+        password: string;
+        preferences: string[];
     }) =>
-        fetchApi("/auth/register", {
-            method: "POST",
-            body: JSON.stringify(data),
-        }),
+        handleAsync(() =>
+            api.post('/auth/register', data).then((res) => res.data),
+        ),
 
-    login: (credentials: { emailOrPhone: string; password: string }) =>
-        fetchApi("/auth/login", {
-            method: "POST",
-            body: JSON.stringify(credentials),
-        }),
+    login: (data: { emailOrPhone: string; password: string }) =>
+        handleAsync<User, { token: string }>(() =>
+            api.post('/auth/login', data).then((res) => res.data),
+        ),
 
-    logout: () => fetchApi("/auth/logout", {method: "POST"}),
+    logout: () =>
+        handleAsync(() => api.post('/auth/logout').then((res) => res.data)),
 
-    getCurrentUser: () => fetchApi("/auth/me"),
-}
+    refreshToken: () =>
+        handleAsync(() =>
+            api.post('/auth/refresh-token').then((res) => res.data),
+        ),
+};

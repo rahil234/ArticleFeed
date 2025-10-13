@@ -1,64 +1,60 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id          String     @id @default(uuid())
-  firstName   String
-  lastName    String
-  email       String?    @unique
-  phone       String?    @unique
-  dob         DateTime?
-  password    String
-  preferences Category[] @relation("UserPreferences")
-  articles    Article[]
-  reactions   Reaction[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+generator client {
+  provider = "prisma-client-js"
 }
 
-model Category {
-  id       String    @id @default(uuid())
-  name     String    @unique
-  users    User[]    @relation("UserPreferences")
+model User {
+  id          String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String   @unique
+  phone       String    @unique
+  dob         DateTime
+  password    String
+  preferences String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
   articles Article[]
+
+  Interaction Interaction[]
 }
 
 model Article {
-  id        String     @id @default(uuid())
-  title     String
-  content   String
-  images    String[]
-  tags      String[]
-  category  Category   @relation(fields: [categoryId], references: [id])
-  categoryId String
-  author    User       @relation(fields: [authorId], references: [id])
-  authorId  String
-  reactions Reaction[]
-  likes     Int        @default(0)
-  dislikes  Int        @default(0)
-  blocks    Int        @default(0)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  content     String
+  category    String
+  tags        String[]
+  images      String[]
+  authorId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author User @relation(fields: [authorId], references: [id])
+
+  Interaction Interaction[]
 }
 
-model Reaction {
-  id        String   @id @default(uuid())
-  type      ReactionType
-  user      User     @relation(fields: [userId], references: [id])
+model Interaction {
+  id        String   @id @default(cuid())
+  type      InteractionType
   userId    String
-  article   Article  @relation(fields: [articleId], references: [id])
   articleId String
   createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  article   Article  @relation(fields: [articleId], references: [id])
 }
 
-enum ReactionType {
+enum InteractionType {
   LIKE
-  DISLIKE
-  BLOCK
+  COMMENT
+  VIEW
+  SHARE
 }

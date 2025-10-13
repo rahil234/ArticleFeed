@@ -15,7 +15,7 @@ async function bootstrap(): Promise<void> {
     const port = configService.getOrThrow<number>('PORT');
 
     await app.listen(port, () => {
-        Logger.log('info', `Server is running on http://localhost:${port}`);
+        Logger.info(`Server is running on http://localhost:${port}`);
     });
 }
 

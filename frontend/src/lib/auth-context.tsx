@@ -1,64 +1,90 @@
-"use client"
+'use client';
 
-import {createContext, useContext, useState, useEffect, type ReactNode} from "react"
-import type {User} from "./types"
-import {authService} from "@/services/auth.service"
+import {
+    createContext,
+    useContext,
+    useState,
+    useEffect,
+    type ReactNode,
+} from 'react';
+import { authService } from '@/services/auth.service';
+import { userService } from '@/services/user.service';
+import type { User } from './types';
 
 interface AuthContextType {
-    user: User | null
-    isLoading: boolean
-    login: (emailOrPhone: string, password: string) => Promise<void>
-    logout: () => Promise<void>
-    refreshUser: () => Promise<void>
+    user: User | null;
+    isLoading: boolean;
+    login: (emailOrPhone: string, password: string) => Promise<void>;
+    logout: () => Promise<void>;
+    refreshUser: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({children}: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
+export function AuthProvider({ children }: { children: ReactNode }) {
+    const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const refreshUser = async () => {
         try {
-            const userData = await authService.getCurrentUser()
-            setUser(userData)
-        } catch (error) {
-            setUser(null)
-            localStorage.removeItem("authToken")
+            const { data, error } = await userService.getCurrentUser();
+
+            if (error || !data?.success) {
+                throw new Error(error || 'Failed to fetch user');
+            }
+
+            setUser(data.data);
+        } catch {
+            setUser(null);
+            localStorage.removeItem('authToken');
         }
-    }
+    };
 
     useEffect(() => {
-        const token = localStorage.getItem("authToken")
+        const token = localStorage.getItem('authToken');
         if (token) {
-            refreshUser().finally(() => setIsLoading(false))
+            refreshUser().finally(() => setIsLoading(false));
         } else {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }, [])
+    }, []);
 
     const login = async (emailOrPhone: string, password: string) => {
-        const response = await authService.login({emailOrPhone, password})
-        localStorage.setItem("authToken", response.token)
-        setUser(response.user)
-    }
+        const { data } = await authService.login({
+            emailOrPhone,
+            password,
+        });
+
+        if (!data?.success) {
+            throw new Error(data?.message || 'Login failed');
+        }
+
+        localStorage.setItem('authToken', data.token);
+        setUser(data?.data);
+    };
 
     const logout = async () => {
         try {
-            await authService.logout()
+            await authService.logout();
         } finally {
-            localStorage.removeItem("authToken")
-            setUser(null)
+            localStorage.removeItem('authToken');
+            setUser(null);
         }
-    }
+    };
 
-    return <AuthContext.Provider value={{user, isLoading, login, logout, refreshUser}}>{children}</AuthContext.Provider>
+    return (
+        <AuthContext.Provider
+            value={{ user, isLoading, login, logout, refreshUser }}
+        >
+            {children}
+        </AuthContext.Provider>
+    );
 }
 
 export function useAuth() {
-    const context = useContext(AuthContext)
+    const context = useContext(AuthContext);
     if (context === undefined) {
-        throw new Error("useAuth must be used within an AuthProvider")
+        throw new Error('useAuth must be used within an AuthProvider');
     }
-    return context
+    return context;
 }

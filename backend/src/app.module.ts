@@ -1,26 +1,22 @@
-import { Module, NestModule } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import Joi from 'joi';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ConfigModule } from '@/common/config/config.module';
 import { AuthModule } from '@/auth/auth.module';
-import { UsersModule } from '@/users/users.module';
 import { PrismaService } from '@/prisma/prisma.service';
+import { UserModule } from '@/user/user.module';
+import { JwtAuthMiddleware } from '@/common/middlewares/jwt-auth.middleware';
+import { ArticleModule } from './article/article.module';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot({
-            isGlobal: true,
-            validationSchema: Joi.object({
-                PORT: Joi.number().default(4000),
-                DATABASE_URL: Joi.string().required(),
-                JWT_SECRET: Joi.string().required(),
-                JWT_EXPIRATION_TIME: Joi.string().default('3600s'),
-            }),
-        }),
-        AuthModule,
-        UsersModule,
-    ],
+    imports: [ConfigModule, AuthModule, UserModule, ArticleModule],
     providers: [PrismaService],
 })
 export class AppModule implements NestModule {
-    configure() {}
+    configure(consumer: MiddlewareConsumer): any {
+        consumer
+            .apply(JwtAuthMiddleware)
+            .forRoutes('/user/me', '/user/preferences');
+        consumer
+            .apply(JwtAuthMiddleware)
+            .forRoutes('/article', '/article/feed');
+    }
 }

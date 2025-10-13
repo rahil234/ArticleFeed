@@ -2,15 +2,8 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.dev
-    environment:
-      PORT: 4000
-      DATABASE_URL: postgresql://postgres.mmevmkahimotprftppch:HYGq8G6z9KHwULX1@aws-1-ap-south-1.pooler.supabase.com:5432/article_feed
-      JWT_SECRET: your_jwt_secret
-    depends_on:
-      - db
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env.production
     ports:
       - '4000:4000'
-
-volumes:
-  db-data:

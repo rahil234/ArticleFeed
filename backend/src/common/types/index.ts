@@ -1,13 +1,18 @@
-export interface HTTP_RESPONSE<T> {
+export interface HTTP_RESPONSE<T = any> {
     message: string;
     success: boolean;
     data?: T;
+    token?: string;
 }
 
 export interface User {
     id: string;
-    username: string;
     email: string;
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface JWTPayload {
+    sub: string;
+    role: 'user';
 }

@@ -6,7 +6,7 @@ import {
 
 export const Logger = createLogger({
     format: winston.format.combine(
-        winston.format.timestamp(),
+        winston.format.timestamp({ format: 'HH:mm:ss' }),
         winston.format.ms(),
         nestWinstonModuleUtilities.format.nestLike('ArticleFeed', {
             colors: true,
