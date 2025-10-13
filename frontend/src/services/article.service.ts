@@ -14,7 +14,10 @@ export const articleService = {
         );
     },
 
-    getById: (id: string) => handleAsync(() => api.get(`/article/${id}`)),
+    getById: (id: string) =>
+        handleAsync<Article>(() =>
+            api.get(`/article/${id}`).then((res) => res.data),
+        ),
 
     create: (data: {
         title: string;
@@ -23,7 +26,7 @@ export const articleService = {
         images: string[];
         tags: string[];
         category: string;
-    }) => handleAsync(() => api.post('/article', data)),
+    }) => handleAsync(() => api.post('/article', data).then((res) => res.data)),
 
     update: (
         id: string,
@@ -35,7 +38,10 @@ export const articleService = {
             tags: string[];
             category: string;
         }>,
-    ) => handleAsync(() => api.put(`/article/${id}`, data)),
+    ) =>
+        handleAsync(() =>
+            api.put(`/article/${id}`, data).then((res) => res.data),
+        ),
 
     getUserArticles: () =>
         handleAsync<Article[]>(() =>
@@ -43,7 +49,12 @@ export const articleService = {
         ),
 
     interact: (articleId: string, type: 'like' | 'dislike' | 'block') =>
-        handleAsync(() => api.post(`/article/${articleId}/interact`, type)),
+        handleAsync(() =>
+            api
+                .post(`/article/${articleId}/interact`, type)
+                .then((res) => res.data),
+        ),
 
-    delete: (id: string) => handleAsync(() => api.delete(`/article/${id}`)),
+    delete: (id: string) =>
+        handleAsync(() => api.delete(`/article/${id}`).then((res) => res.data)),
 };

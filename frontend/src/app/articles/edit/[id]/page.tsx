@@ -59,7 +59,14 @@ export default function EditArticlePage() {
     useEffect(() => {
         const fetchArticle = async () => {
             try {
-                const article = await articleService.getById(articleId);
+                const { data, error } = await articleService.getById(articleId);
+
+                if (error || !data) {
+                    throw new Error(error);
+                }
+
+                const article = data.data;
+
                 setFormData({
                     title: article.title,
                     description: article.description,
@@ -257,7 +264,7 @@ export default function EditArticlePage() {
                                         onChange={(e) =>
                                             setCurrentTag(e.target.value)
                                         }
-                                        onKeyPress={(e) =>
+                                        onKeyUp={(e) =>
                                             e.key === 'Enter' &&
                                             (e.preventDefault(), addTag())
                                         }
@@ -296,7 +303,7 @@ export default function EditArticlePage() {
                                         onChange={(e) =>
                                             setCurrentImage(e.target.value)
                                         }
-                                        onKeyPress={(e) =>
+                                        onKeyUp={(e) =>
                                             e.key === 'Enter' &&
                                             (e.preventDefault(), addImage())
                                         }
