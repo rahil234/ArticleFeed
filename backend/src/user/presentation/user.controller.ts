@@ -1,9 +1,19 @@
-import { Body, Controller, Get, Param, Patch, Req } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    Patch,
+    Put,
+    Req,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { UserService } from '@/user/application/user.service';
 import type { Request } from 'express';
 import type { HTTP_RESPONSE } from '@/common/types';
 import { UserResponseDto } from '@/user/presentation/dto/user-response.dto';
 import { UpdateUserPreferencesDto } from '@/user/presentation/dto/update-user-preferences.dto';
+import { UpdateUserDto } from '@/user/presentation/dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -25,6 +35,22 @@ export class UserController {
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this._userService.findById(id);
+    }
+
+    @Put()
+    async updateUser(@Req() req: Request, @Body() dto: Partial<UpdateUserDto>) {
+        const userId = req.user?.sub;
+        if (!userId) {
+            throw new UnauthorizedException('User not authenticated');
+        }
+
+        const user = await this._userService.update(userId, dto);
+
+        return {
+            message: 'User updated successfully',
+            success: true,
+            data: new UserResponseDto(user),
+        };
     }
 
     @Patch('preferences')

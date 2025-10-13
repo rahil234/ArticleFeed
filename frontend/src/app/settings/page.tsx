@@ -60,7 +60,17 @@ export default function SettingsPage() {
         e.preventDefault();
         setIsLoading(true);
         try {
-            await userService.updateProfile(profileData);
+            const { error } = await userService.updateProfile(profileData);
+
+            if (error) {
+                toast({
+                    title: 'Error',
+                    description: error || 'Failed to update profile',
+                    variant: 'destructive',
+                });
+                return;
+            }
+
             await refreshUser();
             toast({
                 title: 'Success',

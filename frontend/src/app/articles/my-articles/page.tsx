@@ -111,9 +111,13 @@ export default function MyArticlesPage() {
             <main className="container mx-auto px-4 py-8">
                 <div className="flex items-center justify-between mb-8">
                     <h1 className="text-4xl font-bold">My Articles</h1>
-                    <Button asChild>
-                        <Link href="/articles/create">Create New Article</Link>
-                    </Button>
+                    {articles.length !== 0 && (
+                        <Button asChild>
+                            <Link href="/articles/create">
+                                Create New Article
+                            </Link>
+                        </Button>
+                    )}
                 </div>
 
                 {isLoading ? (

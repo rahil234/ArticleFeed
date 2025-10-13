@@ -2,7 +2,9 @@ import { User as UserEntity } from '../domain/user.entity';
 import { User as PrismaUser } from '@prisma/client';
 
 export class UserMapper {
-    static toPersistence(entity: UserEntity): Omit<PrismaUser, 'id'> {
+    static toPersistence(
+        entity: Omit<UserEntity, 'id'>,
+    ): Omit<PrismaUser, 'id'> {
         return {
             firstName: entity.firstName,
             lastName: entity.lastName,

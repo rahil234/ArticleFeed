@@ -17,7 +17,7 @@ export const userService = {
             phone: string;
             dob: string;
         }>,
-    ) => handleAsync(() => api.put('/user/profile', data)),
+    ) => handleAsync(() => api.put('/user', data)),
 
     updatePassword: (data: { currentPassword: string; newPassword: string }) =>
         handleAsync(() => api.patch('/user/password', data)),
