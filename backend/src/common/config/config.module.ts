@@ -11,6 +11,7 @@ import Joi from 'joi';
             validationSchema: Joi.object({
                 PORT: Joi.number().default(4000),
                 DATABASE_URL: Joi.string().required(),
+                CORS_ORIGIN: Joi.string().default('http://localhost:3000'),
                 JWT_SECRET: Joi.string().required(),
                 JWT_EXPIRATION_TIME: Joi.string().default('3600s'),
             }),
