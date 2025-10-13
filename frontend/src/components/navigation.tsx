@@ -12,14 +12,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import {
-    Home,
-    PenSquare,
-    FileText,
-    Settings,
-    LogOut,
-    Menu,
-} from 'lucide-react';
+import { Home, FileText, Settings, LogOut, Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 export function Navigation() {
@@ -34,9 +27,7 @@ export function Navigation() {
 
     const navLinks = [
         { href: '/dashboard', label: 'Dashboard', icon: Home },
-        { href: '/articles/create', label: 'Create Article', icon: PenSquare },
         { href: '/articles/my-articles', label: 'My Articles', icon: FileText },
-        { href: '/settings', label: 'Settings', icon: Settings },
     ];
 
     const NavLinks = () => (

@@ -1,6 +1,7 @@
 import morgan from 'morgan';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 export function setupApp(app: INestApplication) {
     app.use(
@@ -31,8 +32,11 @@ export function setupApp(app: INestApplication) {
         ui: true,
     });
 
+    const configService = app.get(ConfigService);
+    const origins = configService.getOrThrow<string>('CORS_ORIGIN').split(',');
+
     app.enableCors({
-        origin: ['http://localhost:3000'],
+        origin: origins,
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
         credentials: true,
     });
