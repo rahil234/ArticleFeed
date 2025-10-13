@@ -1,0 +1,60 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String   @unique
+  phone       String    @unique
+  dob         DateTime
+  password    String
+  preferences String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  articles Article[]
+
+  Interaction Interaction[]
+}
+
+model Article {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  content     String
+  category    String
+  tags        String[]
+  images      String[]
+  authorId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author User @relation(fields: [authorId], references: [id])
+
+  Interaction Interaction[]
+}
+
+model Interaction {
+  id        String   @id @default(cuid())
+  type      InteractionType
+  userId    String
+  articleId String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  article   Article  @relation(fields: [articleId], references: [id])
+}
+
+enum InteractionType {
+  LIKE
+  COMMENT
+  VIEW
+  SHARE
+}

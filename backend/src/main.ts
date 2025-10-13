@@ -1,15 +1,22 @@
-import {NestFactory} from '@nestjs/core';
-import {AppModule} from './app.module';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { Logger, LoggerInstance } from '@/common/logger/winston-logger';
+import { setupApp } from '@/common/config/app.config';
+import { ConfigService } from '@nestjs/config';
 
-async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
-    const port = process.env.PORT;
-    if (!port) {
-        throw new Error('PORT environment variable is not set');
-    }
+async function bootstrap(): Promise<void> {
+    const app = await NestFactory.create(AppModule, {
+        logger: LoggerInstance,
+    });
+
+    setupApp(app);
+
+    const configService = app.get(ConfigService);
+    const port = configService.getOrThrow<number>('PORT');
+
     await app.listen(port, () => {
-        console.log(`Server is running on http://localhost:${port}`);
+        Logger.info(`Server is running on http://localhost:${port}`);
     });
 }
 
-bootstrap();
+void bootstrap();
