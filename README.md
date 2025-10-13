@@ -12,10 +12,10 @@ A simple article feed application built with Next.js and NestJs.
 
 - Next.js
 - NestJS
-- PostgresSQL
 - TypeScript
-- Tailwind CSS
+- PostgresSQL
 - Prisma ORM
+- Tailwind CSS
 
 ## Getting Started
 

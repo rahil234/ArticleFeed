@@ -8,6 +8,7 @@ import {
 import { User } from '../domain/user.entity';
 import type { UserRepository } from '../domain/user.repository';
 import { UserResponseDto } from '@/user/presentation/dto/user-response.dto';
+import { UpdateUserDto } from '@/user/presentation/dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -71,8 +72,18 @@ export class UserService {
         return user ? user : null;
     }
 
-    async update(id: string, dto: Partial<User>): Promise<User> {
-        return this._userRepository.update(id, dto);
+    async update(id: string, dto: Partial<UpdateUserDto>): Promise<User> {
+        const user = await this._userRepository.findById(id);
+        if (!user) throw new NotFoundException('User not found');
+
+        const userData = {
+            ...user,
+            ...dto,
+            dob: dto.dob ? new Date(dto.dob) : user.dob,
+            updatedAt: new Date(),
+        };
+
+        return this._userRepository.update(id, userData);
     }
 
     async remove(id: string): Promise<void> {

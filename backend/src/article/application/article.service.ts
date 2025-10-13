@@ -54,8 +54,9 @@ export class ArticleService {
         return await this._articleRepository.findByCategory(userId, categories);
     }
 
-    async findByUserId(userId: string) {
-        return await this._articleRepository.findManyByUserId(userId);
+    async findByUserId(userId: string): Promise<Article[]> {
+        const articles = await this._articleRepository.findManyByUserId(userId);
+        return articles ? articles : [];
     }
 
     async findByCategory(userId: string, ...categories: string[]) {

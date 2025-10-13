@@ -20,8 +20,19 @@ export class ArticleController {
     constructor(private readonly _articleService: ArticleService) {}
 
     @Get()
-    async findAll(): Promise<HTTP_RESPONSE<ArticleResponseDto[]>> {
-        const articles = await this._articleService.findAll();
+    async findUserArticles(
+        @Req() req: Request,
+    ): Promise<HTTP_RESPONSE<ArticleResponseDto[]>> {
+        const userId = req.user?.sub;
+        if (!userId) {
+            return {
+                message: 'User not authenticated',
+                success: false,
+            };
+        }
+
+        const articles = await this._articleService.findByUserId(userId);
+
         return {
             message: 'Articles fetched successfully',
             success: true,

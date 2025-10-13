@@ -23,6 +23,6 @@ import { AuthModule } from '@/auth/auth.module';
 })
 export class UserModule implements NestModule {
     configure(consumer: MiddlewareConsumer): any {
-        consumer.apply(JwtAuthMiddleware).forRoutes('/user/me');
+        consumer.apply(JwtAuthMiddleware).forRoutes('user', '/user/me');
     }
 }
