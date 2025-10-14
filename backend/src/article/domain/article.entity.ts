@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { Interaction, User } from '@prisma/client';
 
 export class Article {
     constructor(
@@ -13,5 +13,6 @@ export class Article {
         public createdAt: Date,
         public updatedAt: Date,
         public author: User | null = null,
+        public interactions: Interaction[] | [] = [],
     ) {}
 }

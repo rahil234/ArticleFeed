@@ -51,7 +51,7 @@ export const articleService = {
     interact: (articleId: string, type: 'like' | 'dislike' | 'block') =>
         handleAsync(() =>
             api
-                .post(`/article/${articleId}/interact`, type)
+                .post(`/interaction/${articleId}`, { type })
                 .then((res) => res.data),
         ),
 

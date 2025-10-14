@@ -6,9 +6,10 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { UserModule } from '@/user/user.module';
 import { JwtAuthMiddleware } from '@/common/middlewares/jwt-auth.middleware';
 import { AuthModule } from '@/auth/auth.module';
+import { InteractionModule } from '@/article/interaction/interaction.module';
 
 @Module({
-    imports: [UserModule, AuthModule],
+    imports: [UserModule, AuthModule, InteractionModule],
     controllers: [ArticleController],
     providers: [
         ArticleService,
@@ -18,6 +19,7 @@ import { AuthModule } from '@/auth/auth.module';
         },
         PrismaService,
     ],
+    exports: [ArticleService, 'ArticleRepository'],
 })
 export class ArticleModule implements NestModule {
     configure(consumer: MiddlewareConsumer): any {

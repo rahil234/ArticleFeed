@@ -22,13 +22,17 @@ export class PrismaArticleRepository implements ArticleRepository {
     }
 
     async findById(id: string): Promise<Article | null> {
-        const article = await this.prisma.article.findUnique({ where: { id } });
+        const article = await this.prisma.article.findUnique({
+            where: { id },
+            include: { interactions: true },
+        });
         return article ? ArticleMapper.toDomain(article) : null;
     }
 
     async findManyByUserId(userId: string): Promise<Article[] | null> {
         const articles = await this.prisma.article.findMany({
             where: { authorId: userId },
+            include: { interactions: true, author: true },
         });
         return articles.length > 0
             ? articles.map((d) => ArticleMapper.toDomain(d))
@@ -43,6 +47,7 @@ export class PrismaArticleRepository implements ArticleRepository {
             where: { category: { in: category }, authorId: { not: userId } },
             include: {
                 author: true,
+                interactions: true,
             },
         });
 

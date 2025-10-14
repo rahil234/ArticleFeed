@@ -3,6 +3,7 @@ import type { ArticleRepository } from '@/article/domain/article.repository';
 import { Article } from '@/article/domain/article.entity';
 import { CreateArticleDto } from '@/article/presentation/dto/create-article.dto';
 import { UserService } from '@/user/application/user.service';
+import { ArticleResponseDto } from '@/article/presentation/dto/article-response.dto';
 
 @Injectable()
 export class ArticleService {
@@ -12,13 +13,10 @@ export class ArticleService {
         private readonly _userService: UserService,
     ) {}
 
-    async create(data: CreateArticleDto, authorId?: string): Promise<Article> {
-        if (!authorId) {
-            throw new BadRequestException(
-                'Author ID is required to create an article',
-            );
-        }
-
+    async create(
+        data: CreateArticleDto,
+        authorId: string,
+    ): Promise<ArticleResponseDto> {
         const article = new Article(
             '',
             data.title,
@@ -32,18 +30,12 @@ export class ArticleService {
             new Date(),
         );
 
-        return await this._articleRepository.create(article);
+        const createdArticle = await this._articleRepository.create(article);
+
+        return new ArticleResponseDto(createdArticle);
     }
 
-    async findAll() {
-        return await this._articleRepository.findAll();
-    }
-
-    async findFeedByUser(userId?: string) {
-        if (!userId) {
-            throw new BadRequestException('User ID is required to fetch feed');
-        }
-
+    async findFeedByUser(userId: string): Promise<ArticleResponseDto[]> {
         const user = await this._userService.findById(userId);
         if (!user) {
             throw new BadRequestException('User not found');
@@ -51,20 +43,60 @@ export class ArticleService {
 
         const categories = user.preferences || [];
 
-        return await this._articleRepository.findByCategory(userId, categories);
+        const articles = await this._articleRepository.findByCategory(
+            userId,
+            categories,
+        );
+
+        const res = articles?.map((article) => {
+            const counts = {
+                likes: article.interactions.filter((i) => i.type === 'LIKE')
+                    .length,
+                dislikes: article.interactions.filter(
+                    (i) => i.type === 'DISLIKE',
+                ).length,
+                blocks: 0,
+            };
+
+            const userInteraction = article.interactions.find(
+                (i) => i.userId === userId,
+            );
+
+            return new ArticleResponseDto(
+                article,
+                counts,
+                userInteraction?.type,
+            );
+        });
+
+        return res ? res : [];
     }
 
-    async findByUserId(userId: string): Promise<Article[]> {
+    async findByUserId(userId: string): Promise<ArticleResponseDto[]> {
         const articles = await this._articleRepository.findManyByUserId(userId);
-        return articles ? articles : [];
+
+        const res = articles?.map((article) => {
+            const counts = {
+                likes: article.interactions.filter((i) => i.type === 'LIKE')
+                    .length,
+                dislikes: article.interactions.filter(
+                    (i) => i.type === 'DISLIKE',
+                ).length,
+                blocks: 0,
+            };
+
+            return new ArticleResponseDto(article, counts);
+        });
+
+        return res ? res : [];
     }
 
-    async findByCategory(userId: string, ...categories: string[]) {
-        return await this._articleRepository.findByCategory(userId, categories);
-    }
-
-    async findOne(id: string) {
-        return await this._articleRepository.findById(id);
+    async findOne(id: string): Promise<ArticleResponseDto> {
+        const article = await this._articleRepository.findById(id);
+        if (!article) {
+            throw new BadRequestException('Article not found');
+        }
+        return new ArticleResponseDto(article);
     }
 
     async update(id: string, data: Partial<Article>) {

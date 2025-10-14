@@ -1,5 +1,5 @@
 import { Article as ArticleEntity } from '@/article/domain/article.entity';
-import { Article as PrismaArticle, User } from '@prisma/client';
+import { Article as PrismaArticle, Interaction, User } from '@prisma/client';
 
 export class ArticleMapper {
     static toPersistence(entity: ArticleEntity): Omit<PrismaArticle, 'id'> {
@@ -17,7 +17,10 @@ export class ArticleMapper {
     }
 
     static toDomain(
-        prismaArticle: PrismaArticle & { author?: User | null },
+        prismaArticle: PrismaArticle & {
+            author?: User | null;
+            interactions?: Interaction[];
+        },
     ): ArticleEntity {
         return new ArticleEntity(
             prismaArticle.id,
@@ -31,6 +34,7 @@ export class ArticleMapper {
             prismaArticle.createdAt,
             prismaArticle.updatedAt,
             prismaArticle.author ? prismaArticle.author : null,
+            prismaArticle.interactions ? prismaArticle.interactions : [],
         );
     }
 }

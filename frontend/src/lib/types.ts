@@ -21,6 +21,8 @@ export interface Article {
     authorName: string;
     likes: number;
     dislikes: number;
+    isLiked: boolean;
+    isDisliked: boolean;
     blocks: number;
     createdAt: string;
     updatedAt: string;

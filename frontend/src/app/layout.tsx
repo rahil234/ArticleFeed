@@ -29,7 +29,9 @@ export default function RootLayout({
                         <Toaster />
                     </AuthProvider>
                 </Suspense>
-                <Analytics />
+                {process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true' && (
+                    <Analytics />
+                )}
             </body>
         </html>
     );

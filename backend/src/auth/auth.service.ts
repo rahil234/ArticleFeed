@@ -20,10 +20,6 @@ export class AuthService {
     ) {}
 
     async register(@Body() dto: CreateUserDto) {
-        const existing = await this._userService.findByEmail(dto.email);
-        if (existing)
-            throw new BadRequestException('Email or phone already exists');
-
         const hashedPassword = await bcrypt.hash(dto.password, 10);
 
         const userToCreate = { ...dto, hashedPassword };
