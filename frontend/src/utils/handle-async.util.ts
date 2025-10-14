@@ -1,16 +1,11 @@
 import { handleError } from '@/utils/handle-error.util';
 import type { HTTP_RESPONSE } from '@/types';
 
-type Success<T> = { data: HTTP_RESPONSE<T>; error: null };
-type Failure = { data: null; error: ReturnType<typeof handleError> };
-
-export const handleAsync = async <T>(
-    fn: () => Promise<HTTP_RESPONSE<T>>,
-): Promise<Success<T> | Failure> => {
+export const handleAsync = async <T, P = unknown>(fn: () => Promise<T>) => {
     try {
-        const data = await fn();
+        const data = (await fn()) as HTTP_RESPONSE<T> & P;
         return { data, error: null };
-    } catch (err) {
-        return { data: null, error: handleError(err) };
+    } catch (error) {
+        return { error: handleError(error), data: null };
     }
 };
