@@ -146,6 +146,8 @@ export default function MyArticlesPage() {
                                                 article.images[0] ||
                                                 '/placeholder.svg'
                                             }
+                                            width={100}
+                                            height={100}
                                             alt={article.title}
                                             className="h-full w-full object-cover"
                                         />

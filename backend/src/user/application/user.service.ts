@@ -62,11 +62,6 @@ export class UserService {
         return new UserResponseDto(user);
     }
 
-    async findByEmail(email: string): Promise<User | null> {
-        const user = await this._userRepository.findByEmail(email);
-        return user ? user : null;
-    }
-
     async findByEmailOrPhone(identifier: string): Promise<User | null> {
         const user = await this._userRepository.findByEmailOrPhone(identifier);
         return user ? user : null;
@@ -84,9 +79,5 @@ export class UserService {
         };
 
         return this._userRepository.update(id, userData);
-    }
-
-    async remove(id: string): Promise<void> {
-        return this._userRepository.delete(id);
     }
 }

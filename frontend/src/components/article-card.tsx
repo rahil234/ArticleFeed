@@ -34,7 +34,17 @@ export function ArticleCard({ article, onInteraction }: ArticleCardProps) {
     const handleInteraction = async (type: 'like' | 'dislike' | 'block') => {
         setIsInteracting(true);
         try {
-            await articleService.interact(article.id, type);
+            const { error } = await articleService.interact(article.id, type);
+
+            if (error) {
+                toast({
+                    title: 'Error',
+                    description: error || 'Failed to interact with article',
+                    variant: 'destructive',
+                });
+                return;
+            }
+
             toast({
                 title: 'Success',
                 description: `Article ${type}d successfully`,
@@ -64,6 +74,8 @@ export function ArticleCard({ article, onInteraction }: ArticleCardProps) {
                     <div className="aspect-video w-full overflow-hidden bg-muted">
                         <Image
                             src={article.images[0] || '/placeholder.svg'}
+                            width={100}
+                            height={100}
                             alt={article.title}
                             className="h-full w-full object-cover"
                         />
@@ -123,6 +135,8 @@ export function ArticleCard({ article, onInteraction }: ArticleCardProps) {
                                     src={
                                         article.images[0] || '/placeholder.svg'
                                     }
+                                    width={100}
+                                    height={100}
                                     alt={article.title}
                                     className="h-full w-full object-cover"
                                 />
@@ -163,24 +177,32 @@ export function ArticleCard({ article, onInteraction }: ArticleCardProps) {
 
                         <div className="flex items-center gap-3 pt-4 border-t">
                             <Button
-                                variant="outline"
+                                variant={
+                                    article.isLiked ? 'default' : 'outline'
+                                }
                                 size="sm"
                                 onClick={() => handleInteraction('like')}
                                 disabled={isInteracting}
                                 className="gap-2"
                             >
                                 <ThumbsUp className="h-4 w-4" />
-                                Like ({article.likes})
+                                {article.likes > 0
+                                    ? `Like (${article.likes})`
+                                    : 'Like'}
                             </Button>
                             <Button
-                                variant="outline"
+                                variant={
+                                    article.isDisliked ? 'default' : 'outline'
+                                }
                                 size="sm"
                                 onClick={() => handleInteraction('dislike')}
                                 disabled={isInteracting}
                                 className="gap-2"
                             >
                                 <ThumbsDown className="h-4 w-4" />
-                                Dislike ({article.dislikes})
+                                {article.dislikes > 0
+                                    ? `Dislike (${article.dislikes})`
+                                    : 'Dislike'}
                             </Button>
                             <Button
                                 variant="destructive"

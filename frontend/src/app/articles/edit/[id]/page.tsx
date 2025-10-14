@@ -62,10 +62,17 @@ export default function EditArticlePage() {
                 const { data, error } = await articleService.getById(articleId);
 
                 if (error || !data) {
-                    throw new Error(error);
+                    toast({
+                        title: 'Error',
+                        description: error || 'Article not found',
+                        variant: 'destructive',
+                    });
+                    return;
                 }
 
                 const article = data.data;
+
+                console.log(data);
 
                 setFormData({
                     title: article.title,
@@ -75,7 +82,8 @@ export default function EditArticlePage() {
                     images: article.images || [],
                     tags: article.tags || [],
                 });
-            } catch {
+            } catch (error) {
+                console.log('Failed to fetch article', error);
                 toast({
                     title: 'Error',
                     description: 'Failed to load article',
@@ -326,6 +334,8 @@ export default function EditArticlePage() {
                                                 src={
                                                     image || '/placeholder.svg'
                                                 }
+                                                width={100}
+                                                height={100}
                                                 alt="Article"
                                                 className="h-full w-full object-cover"
                                             />

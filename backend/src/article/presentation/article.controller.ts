@@ -7,6 +7,7 @@ import {
     Delete,
     Req,
     Put,
+    UnauthorizedException,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { ArticleService } from '@/article/application/article.service';
@@ -25,18 +26,14 @@ export class ArticleController {
     ): Promise<HTTP_RESPONSE<ArticleResponseDto[]>> {
         const userId = req.user?.sub;
         if (!userId) {
-            return {
-                message: 'User not authenticated',
-                success: false,
-            };
+            throw new UnauthorizedException('User not authenticated');
         }
-
-        const articles = await this._articleService.findByUserId(userId);
+        const data = await this._articleService.findByUserId(userId);
 
         return {
             message: 'Articles fetched successfully',
             success: true,
-            data: articles.map((article) => new ArticleResponseDto(article)),
+            data: data,
         };
     }
 
@@ -45,11 +42,14 @@ export class ArticleController {
         @Req() req: Request,
         @Body() dto: CreateArticleDto,
     ): Promise<HTTP_RESPONSE<ArticleResponseDto>> {
-        const article = await this._articleService.create(dto, req.user?.sub);
+        const userId = req.user?.sub;
+        if (!userId) throw new UnauthorizedException('User not authenticated');
+
+        const data = await this._articleService.create(dto, userId);
         return {
             message: 'Article created successfully',
             success: true,
-            data: new ArticleResponseDto(article),
+            data,
         };
     }
 
@@ -57,22 +57,28 @@ export class ArticleController {
     async findFeed(
         @Req() req: Request,
     ): Promise<HTTP_RESPONSE<ArticleResponseDto[]>> {
-        const data = await this._articleService.findFeedByUser(req.user?.sub);
+        const userId = req.user?.sub;
+        if (!userId) throw new UnauthorizedException('User not authenticated');
 
-        const MappedData = data?.length
-            ? data.map((item) => new ArticleResponseDto(item))
-            : [];
+        const data = await this._articleService.findFeedByUser(userId);
 
         return {
             message: 'Articles fetched successfully',
             success: true,
-            data: MappedData,
+            data,
         };
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this._articleService.findOne(id);
+    async findOne(
+        @Param('id') id: string,
+    ): Promise<HTTP_RESPONSE<ArticleResponseDto | null>> {
+        const data = await this._articleService.findOne(id);
+        return {
+            message: 'Article fetched successfully',
+            success: true,
+            data,
+        };
     }
 
     @Put(':id')

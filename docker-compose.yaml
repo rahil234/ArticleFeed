@@ -20,6 +20,7 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./backend:/app
+      - ./backend/node_modules/@prisma/client:/app/node_modules/@prisma/clientÎ
       - /app/node_modules
     environment:
       PORT: 4000
