@@ -4,6 +4,7 @@ import { Article } from '@/article/domain/article.entity';
 import { CreateArticleDto } from '@/article/presentation/dto/create-article.dto';
 import { UserService } from '@/user/application/user.service';
 import { ArticleResponseDto } from '@/article/presentation/dto/article-response.dto';
+import { Interaction } from '@/article/interaction/domain/interaction.entity';
 
 @Injectable()
 export class ArticleService {
@@ -49,16 +50,16 @@ export class ArticleService {
         );
 
         const res = articles?.map((article) => {
+            const interactions = (article.interactions ?? []) as Interaction[];
             const counts = {
-                likes: article.interactions.filter((i) => i.type === 'LIKE')
+                likes: interactions.filter((i) => i.type === 'LIKE').length,
+                dislikes: interactions.filter((i) => i.type === 'DISLIKE')
                     .length,
-                dislikes: article.interactions.filter(
-                    (i) => i.type === 'DISLIKE',
-                ).length,
                 blocks: 0,
             };
 
             const userInteraction = article.interactions.find(
+                //@ts-expect-error userId exists in interaction
                 (i) => i.userId === userId,
             );
 
@@ -76,12 +77,11 @@ export class ArticleService {
         const articles = await this._articleRepository.findManyByUserId(userId);
 
         const res = articles?.map((article) => {
+            const interactions = (article.interactions ?? []) as Interaction[];
             const counts = {
-                likes: article.interactions.filter((i) => i.type === 'LIKE')
+                likes: interactions.filter((i) => i.type === 'LIKE').length,
+                dislikes: interactions.filter((i) => i.type === 'DISLIKE')
                     .length,
-                dislikes: article.interactions.filter(
-                    (i) => i.type === 'DISLIKE',
-                ).length,
                 blocks: 0,
             };
 
