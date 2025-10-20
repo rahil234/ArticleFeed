@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import { User } from '../domain/user.entity';
 import type { UserRepository } from '../domain/user.repository';
-import { UserResponseDto } from '@/user/presentation/dto/user-response.dto';
-import { UpdateUserDto } from '@/user/presentation/dto/update-user.dto';
+import { UserResponseDto } from '@/user/dto/user-response.dto';
+import { UpdateUserDto } from '@/user/dto/update-user.dto';
 
 @Injectable()
 export class UserService {

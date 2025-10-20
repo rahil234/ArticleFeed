@@ -8,12 +8,12 @@ import {
     Req,
     UnauthorizedException,
 } from '@nestjs/common';
-import { UserService } from '@/user/application/user.service';
+import { UserService } from '@/user/services/user.service';
 import type { Request } from 'express';
 import type { HTTP_RESPONSE } from '@/common/types';
-import { UserResponseDto } from '@/user/presentation/dto/user-response.dto';
-import { UpdateUserPreferencesDto } from '@/user/presentation/dto/update-user-preferences.dto';
-import { UpdateUserDto } from '@/user/presentation/dto/update-user.dto';
+import { UserResponseDto } from '@/user/dto/user-response.dto';
+import { UpdateUserPreferencesDto } from '@/user/dto/update-user-preferences.dto';
+import { UpdateUserDto } from '@/user/dto/update-user.dto';
 
 @Controller('user')
 export class UserController {

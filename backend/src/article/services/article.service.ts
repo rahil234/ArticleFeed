@@ -1,10 +1,10 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import type { ArticleRepository } from '@/article/domain/article.repository';
-import { Article } from '@/article/domain/article.entity';
-import { CreateArticleDto } from '@/article/presentation/dto/create-article.dto';
-import { UserService } from '@/user/application/user.service';
-import { ArticleResponseDto } from '@/article/presentation/dto/article-response.dto';
-import { Interaction } from '@/article/interaction/domain/interaction.entity';
+import type { ArticleRepository } from '@/article/repositories/article.repository';
+import { Article } from '@/article/entities/article.entity';
+import { CreateArticleDto } from '@/article/dto/create-article.dto';
+import { UserService } from '@/user/services/user.service';
+import { ArticleResponseDto } from '@/article/dto/article-response.dto';
+import { Interaction } from '@/interaction/entities/interaction.entity';
 
 @Injectable()
 export class ArticleService {
@@ -59,7 +59,6 @@ export class ArticleService {
             };
 
             const userInteraction = article.interactions.find(
-                //@ts-expect-error userId exists in interaction
                 (i) => i.userId === userId,
             );
 

@@ -1,4 +1,4 @@
-import { Interaction } from '@/article/interaction/domain/interaction.entity';
+import { Interaction } from '@/interaction/entities/interaction.entity';
 import { Interaction as PrismaInteraction } from '@prisma/client';
 
 export class InteractionMapper {

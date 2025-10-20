@@ -1,4 +1,4 @@
-import { Article } from '@/article/domain/article.entity';
+import { Article } from '@/article/entities/article.entity';
 
 interface InteractionCounts {
     likes: number;

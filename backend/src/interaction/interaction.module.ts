@@ -8,9 +8,9 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { UserModule } from '@/user/user.module';
 import { JwtAuthMiddleware } from '@/common/middlewares/jwt-auth.middleware';
 import { AuthModule } from '@/auth/auth.module';
-import { PrismaInteractionRepository } from '@/article/interaction/infrastructure/prisma-interaction.repository';
-import { InteractionService } from '@/article/interaction/application/interaction.service';
-import { InteractionController } from '@/article/interaction/presentation/interaction.controller';
+import { PrismaInteractionRepository } from '@/interaction/repositories/prisma-interaction.repository';
+import { InteractionService } from '@/interaction/services/interaction.service';
+import { InteractionController } from '@/interaction/controllers/interaction.controller';
 import { ArticleModule } from '@/article/article.module';
 
 @Module({

@@ -7,7 +7,7 @@ import {
     UnauthorizedException,
     Inject,
 } from '@nestjs/common';
-import type { InteractionService } from '@/article/interaction/application/interaction.service';
+import type { InteractionService } from '@/interaction/services/interaction.service';
 import type { Request } from 'express';
 import type { HTTP_RESPONSE } from '@/common/types';
 

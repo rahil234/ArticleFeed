@@ -1,4 +1,4 @@
-import { Article as ArticleEntity } from '@/article/domain/article.entity';
+import { Article as ArticleEntity } from '@/article/entities/article.entity';
 import { Article as PrismaArticle, Interaction, User } from '@prisma/client';
 
 export class ArticleMapper {

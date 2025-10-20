@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import type { InteractionRepository } from '@/article/interaction/domain/interaction.repository';
-import { Interaction } from '@/article/interaction/domain/interaction.entity';
-import { ArticleService } from '@/article/application/article.service';
+import type { InteractionRepository } from '@/interaction/repositories/interaction.repository';
+import { Interaction } from '@/interaction/entities/interaction.entity';
+import { ArticleService } from '@/article/services/article.service';
 
 @Injectable()
 export class InteractionService {

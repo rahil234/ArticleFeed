@@ -4,8 +4,8 @@ import {
     Module,
     NestModule,
 } from '@nestjs/common';
-import { UserService } from '@/user/application/user.service';
-import { UserController } from '@/user/presentation/user.controller';
+import { UserService } from '@/user/services/user.service';
+import { UserController } from '@/user/controllers/user.controller';
 import { PrismaUserRepository } from '@/user/infrastructure/prisma-user.repository';
 import { PrismaService } from '@/prisma/prisma.service';
 import { JwtAuthMiddleware } from '@/common/middlewares/jwt-auth.middleware';

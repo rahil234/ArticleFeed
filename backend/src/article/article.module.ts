@@ -1,12 +1,12 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ArticleService } from '@/article/application/article.service';
-import { ArticleController } from '@/article/presentation/article.controller';
-import { PrismaArticleRepository } from '@/article/infrastructure/prisma-article.repository';
+import { ArticleService } from '@/article/services/article.service';
+import { ArticleController } from '@/article/controllers/article.controller';
+import { PrismaArticleRepository } from '@/article/repositories/prisma-article.repository';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UserModule } from '@/user/user.module';
 import { JwtAuthMiddleware } from '@/common/middlewares/jwt-auth.middleware';
 import { AuthModule } from '@/auth/auth.module';
-import { InteractionModule } from '@/article/interaction/interaction.module';
+import { InteractionModule } from '@/interaction/interaction.module';
 
 @Module({
     imports: [UserModule, AuthModule, InteractionModule],

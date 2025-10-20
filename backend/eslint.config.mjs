@@ -12,6 +12,7 @@ export default tseslint.config(
     ...tseslint.configs.recommendedTypeChecked,
     eslintPluginPrettierRecommended,
     {
+        plugins: PrettierPlugin,
         languageOptions: {
             globals: {
                 ...globals.node,

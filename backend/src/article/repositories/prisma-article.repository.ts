@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Article } from '@/article/domain/article.entity';
+import { Article } from '@/article/entities/article.entity';
 import { Article as PrismaArticle } from '@prisma/client';
-import { ArticleRepository } from '@/article/domain/article.repository';
+import { ArticleRepository } from '@/article/repositories/article.repository';
 import { ArticleMapper } from '@/article/mappers/article.mapper';
 
 @Injectable()
