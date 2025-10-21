@@ -7,11 +7,12 @@ import {
 } from '@nestjs/common';
 import { User } from '../domain/user.entity';
 import type { UserRepository } from '../domain/user.repository';
-import { UserResponseDto } from '@/user/presentation/dto/user-response.dto';
-import { UpdateUserDto } from '@/user/presentation/dto/update-user.dto';
+import { UserResponseDto } from '@/user/dto/user-response.dto';
+import { UpdateUserDto } from '@/user/dto/update-user.dto';
+import { UserService } from '@/user/services/user.service';
 
 @Injectable()
-export class UserService {
+export class UserServiceImpl implements UserService {
     constructor(
         @Inject('UserRepository')
         private readonly _userRepository: UserRepository,
@@ -48,7 +49,7 @@ export class UserService {
         return new UserResponseDto(createdUser);
     }
 
-    async getUserProfile(userId?: string) {
+    async getUserProfile(userId?: string): Promise<UserResponseDto> {
         if (!userId) throw new UnauthorizedException('User not authenticated');
 
         const user = await this._userRepository.findById(userId);

@@ -8,17 +8,21 @@ import {
     Req,
     Put,
     UnauthorizedException,
+    Inject,
 } from '@nestjs/common';
 import type { Request } from 'express';
-import { ArticleService } from '@/article/application/article.service';
-import { CreateArticleDto } from '@/article/presentation/dto/create-article.dto';
-import { UpdateArticleDto } from '@/article/presentation/dto/update-article.dto';
+import type { ArticleService } from '@/article/services/article.service';
+import { CreateArticleDto } from '@/article/dto/create-article.dto';
+import { UpdateArticleDto } from '@/article/dto/update-article.dto';
 import type { HTTP_RESPONSE } from '@/common/types';
-import { ArticleResponseDto } from '@/article/presentation/dto/article-response.dto';
+import { ArticleResponseDto } from '@/article/dto/article-response.dto';
 
 @Controller('article')
 export class ArticleController {
-    constructor(private readonly _articleService: ArticleService) {}
+    constructor(
+        @Inject('ArticleService')
+        private readonly _articleService: ArticleService,
+    ) {}
 
     @Get()
     async findUserArticles(

@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { CreateUserDto } from '@/user/presentation/dto/create-user.dto';
+import { CreateUserDto } from '@/user/dto/create-user.dto';
 import { AuthService } from '@/auth/auth.service';
-import { UserResponseDto } from '@/user/presentation/dto/user-response.dto';
+import { UserResponseDto } from '@/user/dto/user-response.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import type { HTTP_RESPONSE } from '@/common/types';
 

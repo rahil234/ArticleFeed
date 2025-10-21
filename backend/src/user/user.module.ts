@@ -4,22 +4,22 @@ import {
     Module,
     NestModule,
 } from '@nestjs/common';
-import { UserService } from '@/user/application/user.service';
-import { UserController } from '@/user/presentation/user.controller';
+import { UserController } from '@/user/controllers/user.controller';
 import { PrismaUserRepository } from '@/user/infrastructure/prisma-user.repository';
 import { PrismaService } from '@/prisma/prisma.service';
 import { JwtAuthMiddleware } from '@/common/middlewares/jwt-auth.middleware';
 import { AuthModule } from '@/auth/auth.module';
+import { UserServiceImpl } from '@/user/services/user.service.impl';
 
 @Module({
     imports: [forwardRef(() => AuthModule)],
     controllers: [UserController],
     providers: [
-        UserService,
+        { provide: 'UserService', useClass: UserServiceImpl },
         PrismaService,
         { provide: 'UserRepository', useClass: PrismaUserRepository },
     ],
-    exports: [UserService],
+    exports: ['UserService'],
 })
 export class UserModule implements NestModule {
     configure(consumer: MiddlewareConsumer): any {
