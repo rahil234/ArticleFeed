@@ -2,10 +2,11 @@ import bcrypt from 'bcryptjs';
 import {
     BadRequestException,
     Body,
+    Inject,
     Injectable,
     UnauthorizedException,
 } from '@nestjs/common';
-import { UserService } from '@/user/services/user.service';
+import type { UserService } from '@/user/services/user.service';
 import { CreateUserDto } from '@/user/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -14,6 +15,7 @@ import { JWTPayload } from '@/common/types';
 @Injectable()
 export class AuthService {
     constructor(
+        @Inject('UserService')
         private readonly _userService: UserService,
         private readonly _jwtService: JwtService,
         private readonly _configService: ConfigService,

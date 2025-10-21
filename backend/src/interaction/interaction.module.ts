@@ -9,9 +9,9 @@ import { UserModule } from '@/user/user.module';
 import { JwtAuthMiddleware } from '@/common/middlewares/jwt-auth.middleware';
 import { AuthModule } from '@/auth/auth.module';
 import { PrismaInteractionRepository } from '@/interaction/repositories/prisma-interaction.repository';
-import { InteractionService } from '@/interaction/services/interaction.service';
 import { InteractionController } from '@/interaction/controllers/interaction.controller';
 import { ArticleModule } from '@/article/article.module';
+import { InteractionServiceImpl } from '@/interaction/services/interaction.service.impl';
 
 @Module({
     imports: [UserModule, AuthModule, forwardRef(() => ArticleModule)],
@@ -19,7 +19,7 @@ import { ArticleModule } from '@/article/article.module';
     providers: [
         {
             provide: 'InteractionService',
-            useClass: InteractionService,
+            useClass: InteractionServiceImpl,
         },
         {
             provide: 'InteractionRepository',

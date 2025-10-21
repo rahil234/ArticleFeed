@@ -50,13 +50,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const login = async (emailOrPhone: string, password: string) => {
-        const { data } = await authService.login({
+        const { data, error } = await authService.login({
             emailOrPhone,
             password,
         });
 
         if (!data?.success) {
-            throw new Error(data?.message || 'Login failed');
+            throw new Error(error || 'Login failed');
         }
 
         localStorage.setItem('authToken', data.token);

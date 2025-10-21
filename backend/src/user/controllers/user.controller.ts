@@ -2,13 +2,14 @@ import {
     Body,
     Controller,
     Get,
+    Inject,
     Param,
     Patch,
     Put,
     Req,
     UnauthorizedException,
 } from '@nestjs/common';
-import { UserService } from '@/user/services/user.service';
+import type { UserService } from '@/user/services/user.service';
 import type { Request } from 'express';
 import type { HTTP_RESPONSE } from '@/common/types';
 import { UserResponseDto } from '@/user/dto/user-response.dto';
@@ -17,7 +18,9 @@ import { UpdateUserDto } from '@/user/dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
-    constructor(private readonly _userService: UserService) {}
+    constructor(
+        @Inject('UserService') private readonly _userService: UserService,
+    ) {}
 
     @Get('me')
     async getUser(
