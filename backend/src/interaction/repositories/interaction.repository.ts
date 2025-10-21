@@ -1,4 +1,4 @@
-import { Interaction } from '@/article/interaction/domain/interaction.entity';
+import { Interaction } from '@/interaction/entities/interaction.entity';
 
 export interface InteractionRepository {
     create(interaction: Interaction): Promise<Interaction>;

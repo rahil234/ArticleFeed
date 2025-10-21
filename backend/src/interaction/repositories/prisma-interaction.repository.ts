@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { InteractionRepository } from '@/article/interaction/domain/interaction.repository';
-import { Interaction } from '@/article/interaction/domain/interaction.entity';
-import { InteractionMapper } from '@/article/interaction/mappers/interaction.mapper';
+import { InteractionRepository } from '@/interaction/repositories/interaction.repository';
+import { Interaction } from '@/interaction/entities/interaction.entity';
+import { InteractionMapper } from '@/interaction/mappers/interaction.mapper';
 
 @Injectable()
 export class PrismaInteractionRepository implements InteractionRepository {

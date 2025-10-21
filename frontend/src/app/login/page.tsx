@@ -42,6 +42,7 @@ export default function LoginPage() {
             });
             router.push('/dashboard');
         } catch (error) {
+            console.log(error);
             toast({
                 title: 'Error',
                 description: (error as Error).message || 'Invalid credentials',
