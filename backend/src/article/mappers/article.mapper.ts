@@ -13,6 +13,8 @@ export class ArticleMapper {
             tags: entity.tags,
             createdAt: entity.createdAt,
             updatedAt: entity.updatedAt,
+            status: entity.status,
+            publishedAt: entity.publishedAt,
         };
     }
 
@@ -35,6 +37,8 @@ export class ArticleMapper {
             prismaArticle.updatedAt,
             prismaArticle.author ? prismaArticle.author : null,
             prismaArticle.interactions ? prismaArticle.interactions : [],
+            prismaArticle.status,
+            prismaArticle.publishedAt,
         );
     }
 }

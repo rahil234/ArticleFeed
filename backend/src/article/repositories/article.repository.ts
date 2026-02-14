@@ -11,4 +11,6 @@ export interface ArticleRepository {
     ): Promise<Article[] | null>;
     update(id: string, data: Partial<Article>): Promise<Article>;
     delete(id: string): Promise<void>;
+    publish(id: string, userId: string): Promise<Article>;
+    unpublish(id: string, userId: string): Promise<Article>;
 }

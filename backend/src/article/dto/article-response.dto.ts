@@ -1,4 +1,5 @@
 import { Article } from '@/article/entities/article.entity';
+import { PublishStatus } from '@prisma/client';
 
 interface InteractionCounts {
     likes: number;
@@ -22,6 +23,8 @@ export class ArticleResponseDto {
     blocks: number;
     createdAt: Date;
     updatedAt: Date;
+    status: PublishStatus;
+    publishedAt: Date | null;
 
     constructor(
         data: Partial<Article>,
@@ -35,5 +38,7 @@ export class ArticleResponseDto {
         this.likes = interactions?.likes || 0;
         this.dislikes = interactions?.dislikes || 0;
         this.blocks = interactions?.blocks || 0;
+        this.status = data.status || PublishStatus.DRAFT;
+        this.publishedAt = data.publishedAt || null;
     }
 }

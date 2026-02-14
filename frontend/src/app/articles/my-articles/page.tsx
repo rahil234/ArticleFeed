@@ -17,7 +17,16 @@ import { useAuth } from '@/lib/auth-context';
 import type { Article } from '@/lib/types';
 import { articleService } from '@/services/article.service';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Edit, Trash2, ThumbsUp, ThumbsDown, Ban } from 'lucide-react';
+import {
+    Loader2,
+    Edit,
+    Trash2,
+    ThumbsUp,
+    ThumbsDown,
+    Ban,
+    Upload,
+    FileX,
+} from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -36,10 +45,11 @@ export default function MyArticlesPage() {
     const [articles, setArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [publishingId, setPublishingId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!authLoading && !user) {
-            router.push('/login');
+            router.push('/');
         }
     }, [user, authLoading, router]);
 
@@ -94,6 +104,64 @@ export default function MyArticlesPage() {
             });
         } finally {
             setDeleteId(null);
+        }
+    };
+
+    const handlePublish = async (id: string) => {
+        setPublishingId(id);
+        try {
+            const { error } = await articleService.publish(id);
+            if (error) {
+                toast({
+                    title: 'Error',
+                    description: error || 'Failed to publish article',
+                    variant: 'destructive',
+                });
+                return;
+            }
+            toast({
+                title: 'Success',
+                description: 'Article published successfully',
+            });
+            fetchArticles();
+        } catch (error) {
+            toast({
+                title: 'Error',
+                description:
+                    (error as Error).message || 'Failed to publish article',
+                variant: 'destructive',
+            });
+        } finally {
+            setPublishingId(null);
+        }
+    };
+
+    const handleUnpublish = async (id: string) => {
+        setPublishingId(id);
+        try {
+            const { error } = await articleService.unpublish(id);
+            if (error) {
+                toast({
+                    title: 'Error',
+                    description: error || 'Failed to unpublish article',
+                    variant: 'destructive',
+                });
+                return;
+            }
+            toast({
+                title: 'Success',
+                description: 'Article unpublished successfully',
+            });
+            fetchArticles();
+        } catch (error) {
+            toast({
+                title: 'Error',
+                description:
+                    (error as Error).message || 'Failed to unpublish article',
+                variant: 'destructive',
+            });
+        } finally {
+            setPublishingId(null);
         }
     };
 
@@ -158,9 +226,29 @@ export default function MyArticlesPage() {
                                         <h3 className="text-xl font-semibold leading-tight text-balance">
                                             {article.title}
                                         </h3>
-                                        <Badge variant="secondary">
-                                            {article.category}
-                                        </Badge>
+                                        <div className="flex flex-col gap-2 items-end">
+                                            <Badge variant="secondary">
+                                                {article.category}
+                                            </Badge>
+                                            <Badge
+                                                variant={
+                                                    article.status ===
+                                                    'PUBLISHED'
+                                                        ? 'default'
+                                                        : 'outline'
+                                                }
+                                                className={
+                                                    article.status ===
+                                                    'PUBLISHED'
+                                                        ? 'bg-green-500 hover:bg-green-600'
+                                                        : ''
+                                                }
+                                            >
+                                                {article.status === 'PUBLISHED'
+                                                    ? '✓ Published'
+                                                    : '○ Draft'}
+                                            </Badge>
+                                        </div>
                                     </div>
                                     <p className="text-sm text-muted-foreground line-clamp-2">
                                         {article.description}
@@ -182,28 +270,58 @@ export default function MyArticlesPage() {
                                         </div>
                                     </div>
                                 </CardContent>
-                                <CardFooter className="flex gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="flex-1 bg-transparent"
-                                        asChild
-                                    >
-                                        <Link
-                                            href={`/articles/edit/${article.id}`}
+                                <CardFooter className="flex flex-col gap-2">
+                                    <div className="flex gap-2 w-full">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="flex-1 bg-transparent"
+                                            asChild
                                         >
-                                            <Edit className="h-4 w-4 mr-2" />
-                                            Edit
-                                        </Link>
-                                    </Button>
+                                            <Link
+                                                href={`/articles/edit/${article.id}`}
+                                            >
+                                                <Edit className="h-4 w-4 mr-2" />
+                                                Edit
+                                            </Link>
+                                        </Button>
+                                        <Button
+                                            variant="destructive"
+                                            size="sm"
+                                            className="flex-1"
+                                            onClick={() =>
+                                                setDeleteId(article.id)
+                                            }
+                                        >
+                                            <Trash2 className="h-4 w-4 mr-2" />
+                                            Delete
+                                        </Button>
+                                    </div>
                                     <Button
-                                        variant="destructive"
+                                        variant={
+                                            article.status === 'PUBLISHED'
+                                                ? 'outline'
+                                                : 'default'
+                                        }
                                         size="sm"
-                                        className="flex-1"
-                                        onClick={() => setDeleteId(article.id)}
+                                        className="w-full"
+                                        onClick={() =>
+                                            article.status === 'PUBLISHED'
+                                                ? handleUnpublish(article.id)
+                                                : handlePublish(article.id)
+                                        }
+                                        disabled={publishingId === article.id}
                                     >
-                                        <Trash2 className="h-4 w-4 mr-2" />
-                                        Delete
+                                        {publishingId === article.id ? (
+                                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                        ) : article.status === 'PUBLISHED' ? (
+                                            <FileX className="h-4 w-4 mr-2" />
+                                        ) : (
+                                            <Upload className="h-4 w-4 mr-2" />
+                                        )}
+                                        {article.status === 'PUBLISHED'
+                                            ? 'Unpublish'
+                                            : 'Publish'}
                                     </Button>
                                 </CardFooter>
                             </Card>

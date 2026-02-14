@@ -17,7 +17,7 @@ export const authService = {
         ),
 
     login: (data: { emailOrPhone: string; password: string }) =>
-        handleAsync<User, { token: string }>(() =>
+        handleAsync<User>(() =>
             api.post('/auth/login', data).then((res) => res.data),
         ),
 

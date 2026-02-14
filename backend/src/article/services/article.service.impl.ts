@@ -1,11 +1,12 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import type { ArticleRepository } from '@/article/repositories/article.repository';
+
 import { Article } from '@/article/entities/article.entity';
-import { CreateArticleDto } from '@/article/dto/create-article.dto';
 import type { UserService } from '@/user/services/user.service';
-import { ArticleResponseDto } from '@/article/dto/article-response.dto';
-import { Interaction } from '@/interaction/entities/interaction.entity';
+import { CreateArticleDto } from '@/article/dto/create-article.dto';
 import { ArticleService } from '@/article/services/article.service';
+import { Interaction } from '@/interaction/entities/interaction.entity';
+import { ArticleResponseDto } from '@/article/dto/article-response.dto';
+import type { ArticleRepository } from '@/article/repositories/article.repository';
 
 @Injectable()
 export class ArticleServiceImpl implements ArticleService {
@@ -60,7 +61,7 @@ export class ArticleServiceImpl implements ArticleService {
                 blocks: 0,
             };
 
-            const userInteraction = article.interactions.find(
+            const userInteraction = interactions.find(
                 (i) => i.userId === userId,
             );
 
@@ -100,11 +101,39 @@ export class ArticleServiceImpl implements ArticleService {
         return new ArticleResponseDto(article);
     }
 
+    async findAllPublic(): Promise<ArticleResponseDto[]> {
+        const articles = await this._articleRepository.findAll();
+
+        const res = articles?.map((article) => {
+            const interactions = (article.interactions ?? []) as Interaction[];
+            const counts = {
+                likes: interactions.filter((i) => i.type === 'LIKE').length,
+                dislikes: interactions.filter((i) => i.type === 'DISLIKE')
+                    .length,
+                blocks: 0,
+            };
+
+            return new ArticleResponseDto(article, counts);
+        });
+
+        return res ? res : [];
+    }
+
     async update(id: string, data: Partial<Article>) {
         return await this._articleRepository.update(id, data);
     }
 
     async remove(id: string) {
         return await this._articleRepository.delete(id);
+    }
+
+    async publish(id: string, userId: string): Promise<ArticleResponseDto> {
+        const article = await this._articleRepository.publish(id, userId);
+        return new ArticleResponseDto(article);
+    }
+
+    async unpublish(id: string, userId: string): Promise<ArticleResponseDto> {
+        const article = await this._articleRepository.unpublish(id, userId);
+        return new ArticleResponseDto(article);
     }
 }

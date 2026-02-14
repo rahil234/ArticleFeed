@@ -3,6 +3,19 @@ import { handleAsync } from '@/utils/handle-async.util';
 import { Article } from '@/lib/types';
 
 export const articleService = {
+    // Public endpoints - no auth required
+    getPublicArticles: async () => {
+        return await handleAsync<Article[]>(() =>
+            api.get('/article/public').then((res) => res.data),
+        );
+    },
+
+    getPublicById: (id: string) =>
+        handleAsync<Article>(() =>
+            api.get(`/article/public/${id}`).then((res) => res.data),
+        ),
+
+    // Authenticated endpoints
     getFeed: async (params?: { page?: number; limit?: number }) => {
         const p = {
             page: String(params?.page || 1),
@@ -57,4 +70,14 @@ export const articleService = {
 
     delete: (id: string) =>
         handleAsync(() => api.delete(`/article/${id}`).then((res) => res.data)),
+
+    publish: (id: string) =>
+        handleAsync<Article>(() =>
+            api.post(`/article/${id}/publish`).then((res) => res.data),
+        ),
+
+    unpublish: (id: string) =>
+        handleAsync<Article>(() =>
+            api.post(`/article/${id}/unpublish`).then((res) => res.data),
+        ),
 };
