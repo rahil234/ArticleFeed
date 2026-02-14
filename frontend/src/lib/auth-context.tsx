@@ -59,8 +59,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             throw new Error(error || 'Login failed');
         }
 
+        if (!data.token) {
+            throw new Error('No token received');
+        }
+
+        // Token is guaranteed to exist after the checks above
         localStorage.setItem('authToken', data.token);
-        setUser(data?.data);
+        setUser(data.data);
     };
 
     const logout = async () => {

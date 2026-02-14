@@ -1,14 +1,11 @@
 'use client';
 
 import type React from 'react';
-
 import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { Navigation } from '@/components/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import Image from 'next/image';
+import { Loader2, X } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+
 import {
     Card,
     CardContent,
@@ -23,13 +20,18 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { useAuth } from '@/lib/auth-context';
-import { articleService } from '@/services/article.service';
 import { CATEGORIES } from '@/lib/types';
+import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import Image from 'next/image';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Navigation } from '@/components/navigation';
+import { uploadService } from '@/services/upload.service';
+import { articleService } from '@/services/article.service';
+import { RichTextEditor } from '@/components/rich-text-editor';
 
 export default function EditArticlePage() {
     const router = useRouter();
@@ -39,6 +41,7 @@ export default function EditArticlePage() {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -48,11 +51,10 @@ export default function EditArticlePage() {
         tags: [] as string[],
     });
     const [currentTag, setCurrentTag] = useState('');
-    const [currentImage, setCurrentImage] = useState('');
 
     useEffect(() => {
         if (!authLoading && !user) {
-            router.push('/login');
+            router.push('/');
         }
     }, [user, authLoading, router]);
 
@@ -146,13 +148,60 @@ export default function EditArticlePage() {
         });
     };
 
-    const addImage = () => {
-        if (currentImage && !formData.images.includes(currentImage)) {
+    const handleImageUpload = async (
+        e: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        setIsUploading(true);
+        try {
+            const file = files[0];
+
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                toast({
+                    title: 'Error',
+                    description: 'Image size must be less than 5MB',
+                    variant: 'destructive',
+                });
+                return;
+            }
+
+            // Validate file type
+            if (!file.type.match(/^image\/(jpg|jpeg|png|gif|webp)$/)) {
+                toast({
+                    title: 'Error',
+                    description:
+                        'Only image files (JPG, PNG, GIF, WebP) are allowed',
+                    variant: 'destructive',
+                });
+                return;
+            }
+
+            const { url } = await uploadService.uploadImage(file);
+            const fullUrl = `${process.env.NEXT_PUBLIC_API_URL}${url}`;
+
             setFormData({
                 ...formData,
-                images: [...formData.images, currentImage],
+                images: [...formData.images, fullUrl],
             });
-            setCurrentImage('');
+
+            toast({
+                title: 'Success',
+                description: 'Image uploaded successfully',
+            });
+        } catch (error) {
+            toast({
+                title: 'Error',
+                description:
+                    (error as Error).message || 'Failed to upload image',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsUploading(false);
+            // Reset input
+            e.target.value = '';
         }
     };
 
@@ -221,18 +270,12 @@ export default function EditArticlePage() {
 
                             <div className="space-y-2">
                                 <Label htmlFor="content">Content</Label>
-                                <Textarea
-                                    id="content"
-                                    required
-                                    placeholder="Write your article content here..."
-                                    value={formData.content}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            content: e.target.value,
-                                        })
+                                <RichTextEditor
+                                    content={formData.content}
+                                    onChange={(content: string) =>
+                                        setFormData({ ...formData, content })
                                     }
-                                    rows={10}
+                                    placeholder="Write your article content here..."
                                 />
                             </div>
 
@@ -272,10 +315,12 @@ export default function EditArticlePage() {
                                         onChange={(e) =>
                                             setCurrentTag(e.target.value)
                                         }
-                                        onKeyUp={(e) =>
-                                            e.key === 'Enter' &&
-                                            (e.preventDefault(), addTag())
-                                        }
+                                        onKeyUp={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                addTag();
+                                            }
+                                        }}
                                     />
                                     <Button
                                         type="button"
@@ -304,32 +349,45 @@ export default function EditArticlePage() {
 
                             <div className="space-y-2">
                                 <Label>Images</Label>
-                                <div className="flex gap-2">
+                                <div className="flex flex-col gap-2">
                                     <Input
-                                        placeholder="Add image URL"
-                                        value={currentImage}
-                                        onChange={(e) =>
-                                            setCurrentImage(e.target.value)
-                                        }
-                                        onKeyUp={(e) =>
-                                            e.key === 'Enter' &&
-                                            (e.preventDefault(), addImage())
-                                        }
+                                        type="file"
+                                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                        onChange={handleImageUpload}
+                                        disabled={isUploading}
+                                        className="cursor-pointer"
                                     />
-                                    <Button
-                                        type="button"
-                                        onClick={addImage}
-                                        variant="secondary"
-                                    >
-                                        Add
-                                    </Button>
+                                    {isUploading && (
+                                        <p className="text-sm text-muted-foreground flex items-center gap-2">
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            Uploading image...
+                                        </p>
+                                    )}
+                                    <p className="text-xs text-muted-foreground">
+                                        Max file size: 5MB. Supported formats:
+                                        JPG, PNG, GIF, WebP.{' '}
+                                        <span className="font-semibold">
+                                            First image will be used as the
+                                            featured image.
+                                        </span>
+                                    </p>
                                 </div>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
-                                    {formData.images.map((image) => (
+                                    {formData.images.map((image, index) => (
                                         <div
                                             key={image}
                                             className="relative aspect-video rounded-lg overflow-hidden bg-muted"
                                         >
+                                            {index === 0 && (
+                                                <div className="absolute top-2 left-2 z-10">
+                                                    <Badge
+                                                        variant="default"
+                                                        className="text-xs"
+                                                    >
+                                                        Featured
+                                                    </Badge>
+                                                </div>
+                                            )}
                                             <Image
                                                 src={
                                                     image || '/placeholder.svg'

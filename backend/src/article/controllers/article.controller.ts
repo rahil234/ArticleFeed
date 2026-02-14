@@ -24,6 +24,29 @@ export class ArticleController {
         private readonly _articleService: ArticleService,
     ) {}
 
+    @Get('public')
+    async findAllPublic(): Promise<HTTP_RESPONSE<ArticleResponseDto[]>> {
+        const data = await this._articleService.findAllPublic();
+
+        return {
+            message: 'Public articles fetched successfully',
+            success: true,
+            data: data,
+        };
+    }
+
+    @Get('public/:id')
+    async findOnePublic(
+        @Param('id') id: string,
+    ): Promise<HTTP_RESPONSE<ArticleResponseDto | null>> {
+        const data = await this._articleService.findOne(id);
+        return {
+            message: 'Article fetched successfully',
+            success: true,
+            data,
+        };
+    }
+
     @Get()
     async findUserArticles(
         @Req() req: Request,
@@ -96,5 +119,37 @@ export class ArticleController {
     @Delete(':id')
     remove(@Param('id') id: string) {
         return this._articleService.remove(id);
+    }
+
+    @Post(':id/publish')
+    async publish(
+        @Param('id') id: string,
+        @Req() req: Request,
+    ): Promise<HTTP_RESPONSE<ArticleResponseDto>> {
+        const userId = req.user?.sub;
+        if (!userId) throw new UnauthorizedException('User not authenticated');
+
+        const data = await this._articleService.publish(id, userId);
+        return {
+            message: 'Article published successfully',
+            success: true,
+            data,
+        };
+    }
+
+    @Post(':id/unpublish')
+    async unpublish(
+        @Param('id') id: string,
+        @Req() req: Request,
+    ): Promise<HTTP_RESPONSE<ArticleResponseDto>> {
+        const userId = req.user?.sub;
+        if (!userId) throw new UnauthorizedException('User not authenticated');
+
+        const data = await this._articleService.unpublish(id, userId);
+        return {
+            message: 'Article unpublished successfully',
+            success: true,
+            data,
+        };
     }
 }

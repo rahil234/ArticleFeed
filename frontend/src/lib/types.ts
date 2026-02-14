@@ -26,6 +26,8 @@ export interface Article {
     blocks: number;
     createdAt: string;
     updatedAt: string;
+    status: 'DRAFT' | 'PUBLISHED';
+    publishedAt: string | null;
 }
 
 export interface ArticleInteraction {

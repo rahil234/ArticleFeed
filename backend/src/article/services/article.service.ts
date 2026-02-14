@@ -14,7 +14,13 @@ export interface ArticleService {
 
     findOne(id: string): Promise<ArticleResponseDto>;
 
+    findAllPublic(): Promise<ArticleResponseDto[]>;
+
     update(id: string, data: Partial<Article>): Promise<Article>;
 
     remove(id: string): Promise<void>;
+
+    publish(id: string, userId: string): Promise<ArticleResponseDto>;
+
+    unpublish(id: string, userId: string): Promise<ArticleResponseDto>;
 }
