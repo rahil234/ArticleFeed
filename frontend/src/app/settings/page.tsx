@@ -43,7 +43,7 @@ export default function SettingsPage() {
 
     useEffect(() => {
         if (!authLoading && !user) {
-            router.push('/login');
+            router.push('/');
         } else if (user) {
             setProfileData({
                 firstName: user.firstName,

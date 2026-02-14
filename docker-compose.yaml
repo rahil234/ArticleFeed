@@ -10,8 +10,14 @@ services:
       - '5432:5432'
     logging:
       driver: 'none'
+    command:
+      - postgres
+      - -c
+      - log_statement=none
+      - -c
+      - log_min_messages=panic
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql
 
   backend:
     container_name: backend
@@ -20,7 +26,7 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./backend:/app
-      - ./backend/node_modules/@prisma/client:/app/node_modules/@prisma/clientÎ
+      - ./backend/node_modules/@prisma/client:/app/node_modules/@prisma/client
       - /app/node_modules
     environment:
       PORT: 4000
@@ -30,19 +36,6 @@ services:
       - db
     ports:
       - '4000:4000'
-
-  frontend:
-    container_name: frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:4000
-    ports:
-      - '3000:3000'
 
 volumes:
   db-data:

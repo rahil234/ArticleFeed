@@ -1,13 +1,21 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { Logger, LoggerInstance } from '@/common/logger/winston-logger';
-import { setupApp } from '@/common/config/app.config';
-import { ConfigService } from '@nestjs/config';
+import { join } from 'path';
 import { Server } from 'node:http';
+import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
+import { NestExpressApplication } from '@nestjs/platform-express';
+
+import { AppModule } from './app.module';
+import { setupApp } from '@/common/config/app.config';
+import { Logger, LoggerInstance } from '@/common/logger/winston-logger';
 
 async function bootstrap(): Promise<void> {
-    const app = await NestFactory.create(AppModule, {
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         logger: LoggerInstance,
+    });
+
+    // Serve static files from uploads directory
+    app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+        prefix: '/uploads/',
     });
 
     setupApp(app);

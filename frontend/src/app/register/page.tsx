@@ -1,13 +1,10 @@
 'use client';
 
 import type React from 'react';
-
 import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+
 import {
     Card,
     CardContent,
@@ -16,16 +13,20 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { CATEGORIES } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { authService } from '@/services/auth.service';
+import { LoginModal } from '@/components/login-modal';
 
 export default function RegisterPage() {
     const router = useRouter();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -74,7 +75,7 @@ export default function RegisterPage() {
                 title: 'Success',
                 description: 'Account created successfully! Please login.',
             });
-            router.push('/login');
+            setShowLoginModal(true);
         } catch (error) {
             console.log(error);
             toast({
@@ -267,15 +268,25 @@ export default function RegisterPage() {
                 <CardFooter className="flex justify-center">
                     <p className="text-sm text-muted-foreground">
                         Already have an account?{' '}
-                        <Link
-                            href="/login"
+                        <button
+                            type="button"
+                            onClick={() => setShowLoginModal(true)}
                             className="text-primary hover:underline font-medium"
                         >
                             Login
-                        </Link>
+                        </button>
                     </p>
                 </CardFooter>
             </Card>
+
+            <LoginModal
+                open={showLoginModal}
+                onOpenChange={setShowLoginModal}
+                onSuccess={() => {
+                    router.push('/dashboard');
+                    router.refresh();
+                }}
+            />
         </div>
     );
 }
